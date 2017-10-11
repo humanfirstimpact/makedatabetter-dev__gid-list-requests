@@ -1,0 +1,111 @@
+<link rel="import" href="../gid-list-requests.html">
+
+<dom-module id="list-requests">
+  <template>
+  		 <style>
+		  	table, th, td {
+		    border: 1px solid grey;
+		    border-collapse: collapse;
+			}
+			td {
+			    text-align: center;
+			}
+  		</style>
+        <h1>Requests</h1>
+
+        <gid-list-requests api-url='https://virtserver.swaggerhub.com/srimanta.maji/CCOVA/v1' user='1'
+        limit = '10' offset = '0' api-token = ''
+		requests='{{requests}}'></gid-list-requests>
+	  	<!--gid-list-requests api-url='https://protect-lab.globalids.com/mdb/' user='1'
+						 limit = '1000' offset = '0' api-token = 'VVNfMjItMzg0MjY1N18xMTA1MTY0MzI5NzY0MTUwNzI5MDIyOTE1MjI3MDFY'
+						 requests='{{requests}}'></gid-list-requests-->
+            <template is="dom-if" if="[[requestListReceived]]">
+	                <table style="width:100%">
+					  <tr>
+					    <th>ID</th>
+					    <th>User ID</th>
+					    <th>User Type</th>
+					    <th>Application ID</th>
+					    <th>Application Name</th>
+					    <th>Database ID</th>
+					    <th>Database Name</th>
+					    <th>Schema ID</th>
+						<th>Schema Name</th>
+						<th>Table ID</th>
+						<th>Table Name</th>
+						<th>Column ID</th>
+						<th>Column Name</th>
+						<th>LOB ID</th>
+					    <th>LOB Name</th>
+						<th>Status</th>
+					  </tr>
+					  <template is="dom-repeat" items="[[requests]]">
+					  <tr>
+					    <td>{{item.id}}</td>
+						<td>{{item.user.id}}</td>
+					    <td>{{item.user.label}}</td>
+					    <td>{{item.application.id}}</td>
+						<td>{{item.application.label}}</td>
+					    <td>{{item.database.id}}</td>
+						<td>{{item.database.label}}</td>
+					    <td>{{item.schema.id}}</td>
+						<td>{{item.schema.label}}</td>
+					    <td>{{item.table.id}}</td>
+						<td>{{item.table.label}}</td>
+						<td>{{item.column.id}}</td>
+						<td>{{item.column.label}}</td>
+						<td>{{item.lob.id}}</td>
+						<td>{{item.lob.label}}</td>
+						<td>{{item.status}}</td>
+					    <!--td>
+					     <template is="dom-repeat" items="[[item.impactArea]]">
+					     	{{item.label}} &nbsp;
+					     </template>
+					    </td> 
+					    <td>{{item.classificationAccuracyPercentage}}</td>	    
+					    <td>
+					     <template is="dom-repeat" items="[[item.applications]]">
+					     	{{item.label}} &nbsp;
+					     </template>
+					    </td-->
+					  </tr>
+					 </template>
+					</table>
+            </template>
+            <template is="dom-if" if="![[requestListReceived]]">
+	            <div class="horizontal-section">
+	                <p>{{requests.0.userMessage}}</p>
+	            </div>
+        	</template>
+  </template>
+  <script>
+    (function() {
+     'use strict';
+      Polymer({
+		  is: 'list-requests',
+		  properties: {
+			  requests: {
+				  type: Array,
+				  value: [],
+				  notify: true,
+				  observer: 'requestsObserver'
+			  },
+			  requestListReceived: {
+				  type: Boolean,
+				  value: false
+			  }
+		  },
+		  requestsObserver: function () {
+			  if (this.requests.length > 0) {
+				  	  if (this.requests[0]['errorCode']) {
+						  this.requestListReceived = false;
+					  }
+					  else {
+						  this.requestListReceived = true;
+					  }
+				  }
+			  }
+      });
+    })();
+  </script>
+</dom-module>

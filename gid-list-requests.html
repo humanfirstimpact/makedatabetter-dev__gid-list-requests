@@ -1,0 +1,261 @@
+<!--
+  Wrapper component for requests
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../gid-api/gid-api.html">
+<!--
+`gid-list-requests`
+
+
+A data component to get list of requests and its metadata for given user id
+
+    <gid-list-requests user='1' requests='{{requests}}'></gid-list-requests>
+    
+The property 'user' is mandatory.
+
+The property 'requests' returns the response against the rest call.
+
+- `limit`  & `offset` - use limit and offset parameters to paginate records
+
+If 'apiUrl' is not provided, then the component would fetch sample data from mock json.
+
+API endpoint:
+
+    GET /requests
+
+Input:
+
+- User (Query param)
+
+Output:
+
+- List of requests with key metadata (items being displayed on listing page)
+
+
+The output of this components will be as follows:
+
+    {
+  "requests": [
+    {
+      "id": "12345",
+      "user": {
+        "id": "555",
+        "label": "Data Steward1"
+      },
+      "application": {
+        "id": "5556",
+        "label": "Advanced Information Services"
+      },
+      "database": {
+        "id": "5557",
+        "label": "AIS DB"
+      },
+      "schema": {
+        "id": "5558",
+        "label": "ADV_INFO_SRVS"
+      },
+      "table": {
+        "id": "5559",
+        "label": "B2B-PRODUCT-ORDER"
+      },
+      "column": {
+        "id": "5568",
+        "label": "email"
+      },
+      "lob": {
+        "id": "5578",
+        "label": "Global"
+      },
+      "status": "Pending for review"
+    }
+  ]
+}
+
+@demo demo/index.html
+-->
+<dom-module id="gid-list-requests">
+  <template>
+ 		 <!-- fetch entity _path  -->
+        	<gid-api entity = '{{_apiEntity}}' path-key= '{{_pathKey}}' path='{{_path}}'></gid-api>
+         <!--  fetch entity _path -->
+         
+         <!-- requests -->
+			<gid-api auto=false
+				method="GET" api-url={{_requestsUrl}} response='{{requestsResponse}}' error='{{requestsError}}'
+				api-params={{_requestsParams}} api-token = {{_requestsToken}}
+				api-timeout={{_requestsTimeout}} ></gid-api>
+	    <!-- requests -->
+
+  </template>
+  <script>
+    (function() {
+     'use strict';
+      Polymer({
+        is:'gid-list-requests',
+        properties:{
+        	    /*Authorization token for accessing rest api*/
+	        	apiToken: {
+	            	type: String,
+	                notify: true,
+	                value : ''
+	            },
+	            /*Base url*/
+	        	apiUrl:{
+	            	type: String,
+	    	        notify: true,
+	    	        value: ''
+	    	 	},
+	    	   /*Requests url sent to gid-api*/
+				_requestsUrl:{
+                	type: String,
+        	        notify: true
+        	 	},
+        	   /*Requests timeout sent to gid-api*/
+				_requestsTimeout : {
+            		type: Number,
+        	        notify: true,
+        	        value : 0
+        	    },
+        	    /*Requests response sent to gid-api. This is a private property*/
+				requestsResponse : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : '_requestsResponseReceived'
+        	  	},
+        	  	/*Requests error sent to gid-api. This is a private property*/
+				requestsError : {
+        	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : '_requestsErrorReceived'
+        	  	},
+        	  	/*Requests params sent to gid-api*/
+				_requestsParams : {
+	     	   		type: String,
+	     	   		notify : true
+     	   	    },
+     	   	   /*Requests token sent to gid-api*/
+				_requestsToken: {
+	             	type: String,
+	                notify: true
+	            },
+	            /*Array listing the parameters*/
+             	_paramsArr: {
+  	           	   type: Array,
+  	           	   notify: true,
+  	           	   value: ["offset", "limit", "user"]
+                },
+                /*Object for storing success/error response*/
+     	   	    requests: {
+     	          type: Array,
+     	          value: [],
+     	          notify: true
+     	        },
+     	        /*Limit parameter to paginate records*/
+     	      	limit: {
+               	   type: String,
+                   notify: true,
+                   value: ''
+                },
+                /*Offset parameter to paginate records*/
+                offset: {
+                	type: String,
+                	notify: true,
+                	value: ''
+                },
+                /*User Id*/
+     	        user: {
+     	        	type: String,
+     	        	value : '',
+     	        	notify :  true,
+                    observer: '_userModified'
+     	        },
+     	       /*The api path key*/
+     	        _pathKey: {
+                	type: String,
+                    notify: true,
+                    value: ''
+                },
+                /*The api path*/
+                _path: {
+                	type: String,
+                    notify: true,
+                    value: '',
+                    observer: '_pathReceived'
+                },
+                /*Api entity sent to gid-api*/
+                _apiEntity: {
+                	type: String,
+                    notify: true
+                }
+                
+        },
+        /* Observer of user id */
+        _userModified:  function(){
+        	if (this.user) {
+        	 	if (!this.apiUrl) {
+	      			this._requestsUrl = this.importPath + 'assets/json/list-requests.json';
+	                this._requestsTimeout =  this._requestsTimeout - 1;
+      			}
+        		else {
+        			this._pathKey =  'default';
+         			this._apiEntity = 'list-requests';
+         		}
+         	}
+        },
+        /* Observer for api path */
+        _pathReceived: function(){
+        	if(this._path){
+        		var res = this._path.split(/{([^}]+)}/);
+        		for (var i in res) {
+        			if(!res[i].startsWith("/")){
+        					if(this[res[i]]){
+        						res[i] = this[res[i]];
+        					}
+        			}
+        		}
+       			this._requestsUrl = this.apiUrl + res.join("");
+       			var paramsObj = {};
+       			for (var i in this._paramsArr){
+                	if(this[this._paramsArr[i]]){
+                		paramsObj[this._paramsArr[i]]= this[this._paramsArr[i]];;
+                		}
+                	
+                }
+       			this._requestsParams = JSON.stringify(paramsObj);
+       			if(this.apiToken){
+       				this._requestsToken =  this.apiToken;
+       			}
+       			this._requestsTimeout =  this._requestsTimeout - 1;
+        		
+        	}
+        },
+        /* Success response handler */
+        _requestsResponseReceived : function(newvalue, oldvalue){
+            this._reset();
+            if(newvalue != null){
+  	             this.async(function() {
+  	         		this.requests =  this.requests.concat(newvalue.domains);
+  	   		 	          }, 500);
+            }
+           	
+           },
+         /* Error response handler */
+         _requestsErrorReceived : function(newvalue, oldvalue){
+            this._reset();
+            if(newvalue != null){
+  	             this.async(function() {
+  	         		this.requests =  this.requests.concat(newvalue.response);
+  	   		 	          }, 500);
+            }
+           	
+           },
+           /* Reset method */
+           _reset : function(){
+        	   this.requests = [];
+        	   this._apiEntity = '';
+   			   this._path = '';
+           }
+      });
+    })();
+  </script>
+</dom-module>

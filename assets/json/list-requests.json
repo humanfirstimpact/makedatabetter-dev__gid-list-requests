@@ -1,0 +1,36 @@
+{
+  "requests": [
+    {
+      "id": "12345",
+      "user": {
+        "id": "555",
+        "label": "Data Steward1"
+      },
+      "application": {
+        "id": "5556",
+        "label": "Advanced Information Services"
+      },
+      "database": {
+        "id": "5557",
+        "label": "AIS DB"
+      },
+      "schema": {
+        "id": "5558",
+        "label": "ADV_INFO_SRVS"
+      },
+      "table": {
+        "id": "5559",
+        "label": "B2B-PRODUCT-ORDER"
+      },
+      "column": {
+        "id": "5568",
+        "label": "email"
+      },
+      "lob": {
+        "id": "5578",
+        "label": "Global"
+      },
+      "status": "Pending for review"
+    }
+  ]
+}

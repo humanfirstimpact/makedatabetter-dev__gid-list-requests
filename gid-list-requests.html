@@ -198,7 +198,8 @@ The output of this components will be as follows:
       			}
         		else {
         			this._pathKey =  'default';
-         			this._apiEntity = 'list-requests';
+         			//this._apiEntity = 'list-requests';
+					this._apiEntity = 'LIST-REQUESTS';
          		}
          	}
         },
@@ -234,7 +235,7 @@ The output of this components will be as follows:
             this._reset();
             if(newvalue != null){
   	             this.async(function() {
-  	         		this.requests =  this.requests.concat(newvalue.domains);
+  	         		 this.requests =  this.requests.concat(newvalue);
   	   		 	          }, 500);
             }
            	
@@ -244,7 +245,7 @@ The output of this components will be as follows:
             this._reset();
             if(newvalue != null){
   	             this.async(function() {
-  	         		this.requests =  this.requests.concat(newvalue.response);
+  	         		 this.requests =  this.requests.concat(newvalue);
   	   		 	          }, 500);
             }
            	

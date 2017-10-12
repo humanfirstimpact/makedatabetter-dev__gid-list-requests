@@ -16,9 +16,6 @@
         <gid-list-requests api-url='https://virtserver.swaggerhub.com/srimanta.maji/CCOVA/v1' user='1'
         limit = '10' offset = '0' api-token = ''
 		requests='{{requests}}'></gid-list-requests>
-	  	<!--gid-list-requests api-url='https://protect-lab.globalids.com/mdb/' user='1'
-						 limit = '1000' offset = '0' api-token = 'VVNfMjItMzg0MjY1N18xMTA1MTY0MzI5NzY0MTUwNzI5MDIyOTE1MjI3MDFY'
-						 requests='{{requests}}'></gid-list-requests-->
             <template is="dom-if" if="[[requestListReceived]]">
 	                <table style="width:100%">
 					  <tr>
@@ -41,9 +38,10 @@
 					  </tr>
 					  <template is="dom-repeat" items="[[requests]]">
 					  <tr>
+						<template is="dom-repeat" items="[[item.requests]]">
 					    <td>{{item.id}}</td>
 						<td>{{item.user.id}}</td>
-					    <td>{{item.user.label}}</td>
+						<td>{{item.user.label}}</td>
 					    <td>{{item.application.id}}</td>
 						<td>{{item.application.label}}</td>
 					    <td>{{item.database.id}}</td>
@@ -57,17 +55,7 @@
 						<td>{{item.lob.id}}</td>
 						<td>{{item.lob.label}}</td>
 						<td>{{item.status}}</td>
-					    <!--td>
-					     <template is="dom-repeat" items="[[item.impactArea]]">
-					     	{{item.label}} &nbsp;
-					     </template>
-					    </td> 
-					    <td>{{item.classificationAccuracyPercentage}}</td>	    
-					    <td>
-					     <template is="dom-repeat" items="[[item.applications]]">
-					     	{{item.label}} &nbsp;
-					     </template>
-					    </td-->
+						</template>
 					  </tr>
 					 </template>
 					</table>
